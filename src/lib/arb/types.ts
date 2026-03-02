@@ -33,7 +33,11 @@ export interface ReviewerPersona {
 
 export const ConcernSchema = z.object({
   title: z.string(),
-  severity: z.enum(["critical", "major", "minor", "informational"]),
+  severity: z
+    .enum(["critical", "major", "minor", "informational"])
+    .describe(
+      "Severity level. MUST be EXACTLY one of: 'critical', 'major', 'minor', 'informational' in ALL LOWERCASE.",
+    ),
   category: z.string(),
   description: z.string(),
   recommendation: z.string(),

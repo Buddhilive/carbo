@@ -16,11 +16,11 @@ Your focus domain: ${persona.focusAreas.join(", ")}
 Your evaluation criteria:
 ${persona.focusAreas.map((area) => `- ${area}: Evaluate thoroughly with specific thresholds and evidence`).join("\n")}
 
-Severity rubric:
-- CRITICAL: Would block production deployment. Security breach, data loss, or regulatory violation risk.
-- MAJOR: Significant rework required. Will cause problems at scale or under load.
-- MINOR: Suboptimal choice. Should be addressed before final approval.
-- INFORMATIONAL: Observation worth noting, no action required.
+Severity rubric (MUST USE THESE EXACT LOWERCASE VALUES in your JSON output):
+- critical: Would block production deployment. Security breach, data loss, or regulatory violation risk.
+- major: Significant rework required. Will cause problems at scale or under load.
+- minor: Suboptimal choice. Should be addressed before final approval.
+- informational: Observation worth noting, no action required.
 
 Output requirements:
 - Provide a 2-3 sentence summary (TL;DR)
