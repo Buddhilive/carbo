@@ -46,8 +46,10 @@ function StageIndicator({
   const currentIdx = stageOrder.indexOf(currentStage);
   const targetIdx = stageOrder.indexOf(stage);
 
-  const isComplete = currentIdx > targetIdx;
-  const isActive = currentIdx === targetIdx;
+  const isComplete =
+    currentIdx > targetIdx ||
+    (stage === "complete" && currentStage === "complete");
+  const isActive = currentIdx === targetIdx && !isComplete;
 
   return (
     <div className="flex items-center gap-2 py-1">
