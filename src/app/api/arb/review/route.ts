@@ -2,6 +2,7 @@ import { arbGraph } from "@/lib/arb/graph";
 import { ARBProposalSchema } from "@/lib/arb/types";
 import type { ARBProposal } from "@/lib/arb/types";
 import { nanoid } from "nanoid";
+import { prisma } from "@/lib/prisma";
 
 // Allow streaming responses up to 2 minutes for full council review
 export const maxDuration = 120;
@@ -30,6 +31,16 @@ export async function POST(req: Request) {
       const payload = `data: ${JSON.stringify(data)}\n\n`;
       await writer.write(encoder.encode(payload));
     };
+
+    // Save initial session to Database
+    await prisma.aRBSession.create({
+      data: {
+        id: resolvedSessionId,
+        title: validatedProposal.title,
+        proposal: JSON.stringify(validatedProposal),
+        adr: null,
+      },
+    });
 
     // Run the graph in the background
     const runGraph = async () => {
@@ -67,6 +78,12 @@ export async function POST(req: Request) {
             type: "adr-complete",
             id: `adr-${Date.now()}`,
             adr: result.adr,
+          });
+
+          // Update DB with the generated ADR
+          await prisma.aRBSession.update({
+            where: { id: resolvedSessionId },
+            data: { adr: JSON.stringify(result.adr) },
           });
         }
 
