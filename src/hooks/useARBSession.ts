@@ -24,6 +24,7 @@ interface UseARBSessionReturn {
   isRunning: boolean;
   error: string | null;
   submitProposal: (proposal: ARBProposal) => Promise<void>;
+  loadHistoricalSession: (sessionData: { adr?: ADRDocument | null }) => void;
 }
 
 export function useARBSession(): UseARBSessionReturn {
@@ -191,6 +192,27 @@ export function useARBSession(): UseARBSessionReturn {
     [sessionId, handleEvent],
   );
 
+  const loadHistoricalSession = useCallback(
+    (sessionData: { adr?: ADRDocument | null }) => {
+      if (sessionData.adr) {
+        setAdr(sessionData.adr);
+        setSessionStage("complete");
+        setReviewerStatuses(
+          new Map([
+            ["security", "complete"],
+            ["scalability", "complete"],
+            ["cost", "complete"],
+            ["operability", "complete"],
+            ["domain-architect", "complete"],
+          ]),
+        );
+      } else {
+        setSessionStage("intake");
+      }
+    },
+    [],
+  );
+
   // Cleanup on unmount
   useEffect(() => {
     return () => {
@@ -209,5 +231,6 @@ export function useARBSession(): UseARBSessionReturn {
     isRunning,
     error,
     submitProposal,
+    loadHistoricalSession,
   };
 }

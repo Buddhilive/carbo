@@ -29,6 +29,7 @@ export default function ARBSessionPage({
     "reviews",
   );
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [isInitializing, setIsInitializing] = useState(true);
 
   const {
     reviewerStatuses,
@@ -40,17 +41,40 @@ export default function ARBSessionPage({
     isRunning,
     error,
     submitProposal,
+    loadHistoricalSession,
   } = useARBSession();
 
-  // Load proposal from sessionStorage and auto-start
+  // Load proposal from sessionStorage or database
   useEffect(() => {
-    const stored = sessionStorage.getItem(`arb-proposal-${routeSessionId}`);
-    if (stored) {
-      const parsedProposal = JSON.parse(stored) as ARBProposal;
-      setProposal(parsedProposal);
-      submitProposal(parsedProposal);
+    async function initSession() {
+      // 1. Check if we just submitted a new proposal (in sessionStorage)
+      const stored = sessionStorage.getItem(`arb-proposal-${routeSessionId}`);
+      if (stored) {
+        const parsedProposal = JSON.parse(stored) as ARBProposal;
+        setProposal(parsedProposal);
+        submitProposal(parsedProposal);
+        sessionStorage.removeItem(`arb-proposal-${routeSessionId}`);
+        setIsInitializing(false);
+        return;
+      }
+
+      // 2. Fetch from DB if it's a historical session link
+      try {
+        const res = await fetch(`/api/arb/sessions/${routeSessionId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.proposal) setProposal(data.proposal);
+          if (data.adr) loadHistoricalSession({ adr: data.adr });
+        }
+      } catch (err) {
+        console.error("Failed to fetch historical session:", err);
+      } finally {
+        setIsInitializing(false);
+      }
     }
-  }, [routeSessionId, submitProposal]);
+
+    initSession();
+  }, [routeSessionId, submitProposal, loadHistoricalSession]);
 
   // Timer
   useEffect(() => {
