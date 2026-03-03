@@ -1,6 +1,6 @@
 "use client";
 
-import { Frame, MoreHorizontal, Trash2 } from "lucide-react";
+import { Frame, MoreHorizontal, Plus, Trash2 } from "lucide-react";
 
 import {
   DropdownMenu,
@@ -67,59 +67,75 @@ export function NavHistory() {
   };
 
   return (
-    <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-      <SidebarGroupLabel>Recent Proposals</SidebarGroupLabel>
-      <SidebarMenu>
-        {loading ? (
-          <div className="text-xs text-muted-foreground px-2 py-1">
-            Loading...
-          </div>
-        ) : sessions.length === 0 ? (
-          <div className="text-xs text-muted-foreground px-2 py-1">
-            No recent proposals
-          </div>
-        ) : (
-          sessions.map((session) => (
-            <SidebarMenuItem key={session.id}>
-              <SidebarMenuButton asChild>
-                <Link href={`/board-room/${session.id}`}>
-                  <Frame className="text-muted-foreground" />
-                  <span className="truncate">{session.title}</span>
-                </Link>
-              </SidebarMenuButton>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuAction showOnHover>
-                    <MoreHorizontal />
-                    <span className="sr-only">More</span>
-                  </SidebarMenuAction>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent
-                  className="w-48"
-                  side={isMobile ? "bottom" : "right"}
-                  align={isMobile ? "end" : "start"}
-                >
-                  <DropdownMenuItem onClick={() => deleteSession(session.id)}>
-                    <Trash2 className="text-muted-foreground" />
-                    <span>Delete Session</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </SidebarMenuItem>
-          ))
-        )}
-
-        {!loading && sessions.length >= 10 && (
+    <>
+      <SidebarGroup>
+        <SidebarGroupLabel>Actions</SidebarGroupLabel>
+        <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className="text-muted-foreground">
-              <Link href="/board-room/history">
-                <MoreHorizontal className="text-muted-foreground" />
-                <span>View More</span>
+            <SidebarMenuButton asChild tooltip="New Session">
+              <Link href="/board-room">
+                <Plus />
+                <span>New Session</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
-        )}
-      </SidebarMenu>
-    </SidebarGroup>
+        </SidebarMenu>
+      </SidebarGroup>
+
+      <SidebarGroup className="group-data-[collapsible=icon]:hidden">
+        <SidebarGroupLabel>Recent Proposals</SidebarGroupLabel>
+        <SidebarMenu>
+          {loading ? (
+            <div className="text-xs text-muted-foreground px-2 py-1">
+              Loading...
+            </div>
+          ) : sessions.length === 0 ? (
+            <div className="text-xs text-muted-foreground px-2 py-1">
+              No recent proposals
+            </div>
+          ) : (
+            sessions.map((session) => (
+              <SidebarMenuItem key={session.id}>
+                <SidebarMenuButton asChild>
+                  <Link href={`/board-room/${session.id}`}>
+                    <Frame className="text-muted-foreground" />
+                    <span className="truncate">{session.title}</span>
+                  </Link>
+                </SidebarMenuButton>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <SidebarMenuAction showOnHover>
+                      <MoreHorizontal />
+                      <span className="sr-only">More</span>
+                    </SidebarMenuAction>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="w-48"
+                    side={isMobile ? "bottom" : "right"}
+                    align={isMobile ? "end" : "start"}
+                  >
+                    <DropdownMenuItem onClick={() => deleteSession(session.id)}>
+                      <Trash2 className="text-muted-foreground" />
+                      <span>Delete Session</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </SidebarMenuItem>
+            ))
+          )}
+
+          {!loading && sessions.length >= 10 && (
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild className="text-muted-foreground">
+                <Link href="/board-room/history">
+                  <MoreHorizontal className="text-muted-foreground" />
+                  <span>View More</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+        </SidebarMenu>
+      </SidebarGroup>
+    </>
   );
 }
